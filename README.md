@@ -9,6 +9,7 @@ analysis/
 │
 ├── analysis/
 │   ├── bets/
+│   ├── commons/
 │   └── results/
 ├── data/
 │   ├── bets/
@@ -16,6 +17,7 @@ analysis/
 ├── docs/
 ├── tests/
 │       ├── bets/
+│       ├── commons/
 │       └── results/
 ├── .gitignore
 └── README.md

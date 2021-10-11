@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-CONFIG_NAME = "config_results"
+CONFIG_NAME = 'config_results'
 
 # Global settings
 BROKER = 'https://www.matchendirect.fr'
+FRENCH_LEAGUES = ["France : Ligue 1", "France : Ligue 2"]
