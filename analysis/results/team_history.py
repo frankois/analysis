@@ -6,9 +6,12 @@ Based on www.matchendirect.fr website
 
 from analysis.common.parsing import fetch_soup
 from analysis.common.calendar import get_current_date
+import collections
 import config
 import sys
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def format_url_matchendirect(team):
@@ -66,8 +69,25 @@ def draw_series(games):
     # End workaround
 
     series_max = series_detail.max()
-    return games, series_max
 
+    series_reset = np.where(games.series == 0)[0]
+    series_nodraw_max = games.series[series_reset]
+    series_nodraw_max_clean = series_nodraw_max[series_nodraw_max!=0] # removes zeros
+
+    return games, series_max, series_nodraw_max
+
+def plot_series(series, method):
+    if method == 1:
+        # numpy way
+        unique, counts = np.unique(series, return_counts=True)
+        to_plot = dict(zip(unique, counts))
+
+    elif method == 2:
+        # std collections way
+        to_plot = collections.Counter(series)
+
+    plt.bar(list(to_plot.keys()), to_plot.values(), color='g')
+    plt.show()
 
 if __name__ == "__main__":
     team = sys.argv[1]
@@ -80,8 +100,10 @@ if __name__ == "__main__":
             games = get_draw_statistics(history, team)
             games = games[::-1].reset_index(drop=True)
 
-            games, series_max = draw_series(games)
+            games, series_max, series_nodraw_max = draw_series(games)
             print(f'The maximum nodraw series in {league} was {series_max} games')
 
         except IndexError:
             print(f'Sorry, {team} have never played in {league}')
+
+    plot_series(series_nodraw_max, 2)
