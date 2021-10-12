@@ -1,29 +1,53 @@
 # -*- coding: utf-8 -*-
 
-""" Fetching listing of all teams of a specific league
-Based on www.matchendirect.fr website
-"""
-
-from analysis.common.parsing import fetch_soup
 from analysis.common.calendar import get_current_date
+from analysis.results.brokers import MatchEnDirect # Change to conditional import
+
 import config
-import sys
+import os
 import pandas as pd
 
-if __name__ == "__main__":
-    country = sys.argv[1]
-    league = sys.argv[2]
 
-    date = "today"
-    search_url = f"{config.BROKER}/{country}/{league}"
+class League:
+    """ Fetching listing of all teams of a specific league
+    Based on www.matchendirect.fr website
+    """
 
-    soup_data = fetch_soup(search_url)
-    soup_data.select("#colonne_droite")
+    def __init__(self, country, division, broker):
+        self.country = country
+        self.division = division
+        self.broker = eval(config.BROKERS[broker]['class'])
+        self.search_url = self.broker.format_league_url(self.country, self.division)
 
-    teams = pd.DataFrame([], columns=['league','name','url','date'])
-    teams.url = [url.a['href'] for url in soup_data.select(".equipe")]
-    teams.name = [name.split('.')[-2].split('/')[-1] for name in teams.url]
-    teams.league = league
-    teams.date = get_current_date()
+        self.league_list_name = f'league_{self.country}_{self.division}_{broker}.csv'
+        self.league_list_path = f'{config.LEAGUE_LISTS_PATH}{self.league_list_name}'
 
-    print(teams)
+    @property
+    def date(self):
+        return get_current_date()
+
+
+    @property
+    def has_league_list(self):
+        if os.path.isfile(self.league_list_path): # TOMOD: move this in commons
+            return True
+        else:
+            return False
+
+
+    @property
+    def league_list(self):
+        if not self.has_league_list:
+            print('This team does not have league list, please fetch it first')
+        elif self.has_league_list:
+            with open(self.league_list_path, 'r') as f:
+                league_list = f.read()
+            return league_list
+
+
+    def fetch_list(self, force=0):
+        if self.has_league_list and not force:
+            print('This league already has its list')
+        else:
+            league_list = self.broker.fetch_league_list(self.search_url, self.country, self.division)
+            league_list.to_csv(self.league_list_path)
