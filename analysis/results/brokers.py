@@ -24,17 +24,20 @@ class MatchEnDirect:
 
 
     @staticmethod
-    def format_league_url(country, division):
+    def format_league_url(country, level):
         """Format matchendirect.fr search url for leagues."""
         root_url = config.BROKERS['med']['root_url']
-        division_url = f'{root_url}/{country}/{division}'
-        return division_url
+        broker_league = f'{country}_{level}'
+        broker_country = config.BROKERS_LEAGUES['med'][broker_league]['country']
+        broker_division = config.BROKERS_LEAGUES['med'][broker_league]['division']
+        league_url = f'{root_url}/{broker_country}/{broker_division}'
+        return league_url
 
 
     @staticmethod
     def fetch_team_archive(search_url, league):
         """Extract team archive."""
-        league = config.BROKER_LEAGUES[league]
+        league = config.BROKERS_LEAGUES[league] # TODO: adjust with current config
         soup_data = fetch_soup(search_url)
         panels = soup_data.select("#bloc_anciennes_saisons")[0].select('div[class*="panel"]')
 
@@ -48,16 +51,16 @@ class MatchEnDirect:
 
 
     @staticmethod
-    def fetch_league_list(search_url, country, division):
+    def fetch_league_list(search_url, country, level):
         soup_data = fetch_soup(search_url)
         soup_data.select("#colonne_droite")
 
-        teams = pd.DataFrame([], columns=['country', 'division','name','url','date'])
+        teams = pd.DataFrame([], columns=['country', 'level','name','url','date'])
         teams.url = [url.a['href'] for url in soup_data.select(".equipe")]
         teams.name = [name.split('.')[-2].split('/')[-1] for name in teams.url]
         # TOMOD: maybe move next to league logic
         teams.country = country
-        teams.division = division
+        teams.division = level
         teams.date = get_current_date()
 
         return teams

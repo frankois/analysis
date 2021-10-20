@@ -13,13 +13,14 @@ class League:
     Based on www.matchendirect.fr website
     """
 
-    def __init__(self, country, division, broker):
+    def __init__(self, country, level, broker):
         self.country = country
-        self.division = division
+        self.level = level
         self.broker = eval(config.BROKERS[broker]['class'])
-        self.search_url = self.broker.format_league_url(self.country, self.division)
 
-        self.league_list_name = f'league_{self.country}_{self.division}_{broker}.csv'
+        self.search_url = self.broker.format_league_url(self.country, self.level)
+
+        self.league_list_name = f'league_{self.country}_{self.level}_{broker}.csv'
         self.league_list_path = f'{config.LEAGUE_LISTS_PATH}{self.league_list_name}'
 
     @property
@@ -49,5 +50,5 @@ class League:
         if self.has_league_list and not force:
             print('This league already has its list')
         else:
-            league_list = self.broker.fetch_league_list(self.search_url, self.country, self.division)
+            league_list = self.broker.fetch_league_list(self.search_url, self.country, self.level)
             league_list.to_csv(self.league_list_path)
