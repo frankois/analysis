@@ -25,7 +25,7 @@ if __name__ == "__main__":
                 team_name = row['name']
                 team = Team(team_name, country, level, broker)
                 print(f'{team_name} --> created')
-                team.fetch_archive()
+                team.fetch_archive(1)
                 if team.archive != 'empty_archive':
                     print(f'{team_name} --> archive')
                     team.generate_draw_statistics()
