@@ -9,14 +9,14 @@ import os
 
 class Team:
 
-    def __init__(self, name, country, division, broker):
+    def __init__(self, name, country, level, broker):
         self.name = name
         self.country = country
-        self.division = division
+        self.level = level
         self.broker = eval(config.BROKERS[broker]['class'])
         self.search_url = self.broker.format_team_url(self.name)
 
-        self.archive_name = f'archive_{self.name}_{self.division}_{broker}.html'
+        self.archive_name = f'archive_{self.name}_{self.level}_{broker}.html'
         self.archive_path = f'{config.ARCHIVES_PATH}{self.archive_name}'
 
         self.draw_statistics = None
@@ -41,11 +41,11 @@ class Team:
             return archive
 
 
-    def fetch_archive(self):
-        if self.has_archive:
+    def fetch_archive(self, force=0):
+        if self.has_archive and not force:
             print('This team already have its archive')
         else:
-            archive = self.broker.fetch_team_archive(self.search_url, self.division)
+            archive = self.broker.fetch_team_archive(self)
             with open(self.archive_path, 'w') as f:
                 f.write(str(archive))
 
