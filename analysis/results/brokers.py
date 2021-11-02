@@ -135,7 +135,7 @@ class MatchEnDirect:
         games = games.sort_index().reset_index(drop=True)
         series_detail = games.dropna().groupby('team').draw.apply(lambda x : x.groupby(x.ne(0).cumsum()).cumcount())
         games['series'] = pd.Series(series_detail, dtype=object)
-        games = games.iloc[1:].reset_index(drop=True)
+        games = games.iloc[1:,:].reset_index(drop=True)
         # End workaround
 
         series_max = games.series.max()
