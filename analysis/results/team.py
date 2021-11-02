@@ -41,25 +41,34 @@ class Team:
             return archive
 
 
-    def fetch_archive(self, force=0):
+    def fetch_archive(self, force=0, verbose=0):
         if self.has_archive and not force:
-            print('This team already have its archive')
+            if verbose:
+                print('This team already have its archive')
+            else:
+                pass
         else:
             archive = self.broker.fetch_team_archive(self)
             with open(self.archive_path, 'w') as f:
                 f.write(str(archive))
 
 
-    def generate_draw_statistics(self):
-        if self.draw_statistics:
-            print('Statistics for this team are already available')
+    def generate_draw_statistics(self, force=0, verbose=0):
+        if self.draw_statistics and not force:
+            if verbose:
+                print('Statistics for this team are already available')
+            else:
+                pass
         else:
             self.draw_statistics = self.broker.get_draw_statistics(self)
 
 
-    def generate_draw_kpis(self):
-        if self.draw_kpis:
-            print('KPIs for this team are already available')
+    def generate_draw_kpis(self, force=0, verbose=0):
+        if self.draw_kpis and not force:
+            if verbose:
+                print('KPIs for this team are already available')
+            else:
+                pass
         else:
             self.series_max, self.draw_kpis = self.broker.get_draw_kpis(self.draw_statistics)
 

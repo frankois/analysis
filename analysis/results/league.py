@@ -46,9 +46,12 @@ class League:
             return league_list
 
 
-    def fetch_list(self, force=0):
+    def fetch_list(self, force=0, verbose=0):
         if self.has_league_list and not force:
-            print('This league already has its list')
+            if verbose:
+                print('This league already has its list')
+            else:
+                pass
         else:
             league_list = self.broker.fetch_league_list(self.search_url, self.country, self.level)
             league_list.to_csv(self.league_list_path)
