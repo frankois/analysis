@@ -4,6 +4,7 @@ CONFIG_NAME = 'config_results'
 
 ARCHIVES_PATH = '../../data/results/archives/'
 LEAGUE_LISTS_PATH = '../../data/results/leagues/'
+CURRENTS_PATH = '../../data/results/currents/'
 
 AVAILABLE_COUNTRIES = [
     'france',

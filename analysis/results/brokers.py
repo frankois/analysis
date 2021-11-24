@@ -56,6 +56,23 @@ class MatchEnDirect:
 
 
     @staticmethod
+    def fetch_team_current(team):
+        """Fetch raw data of current games for a single team."""
+        broker_league = f'{team.country}_{team.level}'
+        broker_designation = config.BROKERS_LEAGUES['med'][broker_league]['designation']
+        soup_data = fetch_soup(team.search_url)
+        panels = soup_data.select("#livescore")[0].select('div[class*="panel"]')
+
+        current = list()
+        for elt in panels:
+            if elt.a.text == broker_designation:
+                current.append(elt)
+                break
+
+        return current[0]
+
+
+    @staticmethod
     def fetch_league_list(search_url, country, level):
         soup_data = fetch_soup(search_url)
         soup_data.select("#colonne_droite")
@@ -97,34 +114,6 @@ class MatchEnDirect:
 
 
     @staticmethod
-    def get_current_statistics(team):
-        """Process games to extract relevant data."""
-        soup_data = BeautifulSoup(team.archive, 'html.parser')
-        raw_games = soup_data.find_all('tr')
-        games = pd.DataFrame([], columns=['team','status','date','score','draw'])
-
-        for elt in raw_games[1:]: # remove first misc
-            try:
-                date = elt.find_all('td',{'class':'lm2'})[0].text[-8:]
-            except IndexError:  # End of proper formatted games
-                break
-
-            score = elt.find_all('td',{'class':'lm3'})[0].find_all('span',{'class':'lm3_score'})[0].text.strip().replace(" ","")
-            if bool(score):
-                status = "past"
-                isDraw = 1 if int(score.split("-")[0]) == int(score.split("-")[1]) else 0
-            elif not bool(score):
-                status = "current"
-                score = "x-x"
-                isDraw = None
-
-            games.loc[len(games)] = [team.name, status, date, score, isDraw]
-            games = games[::-1].reset_index(drop=True)
-
-        return games
-
-
-    @staticmethod
     def get_draw_kpis(games):
         """Calculation of the most important indicators."""
 
@@ -146,3 +135,45 @@ class MatchEnDirect:
         series_max_counts = collections.Counter(series_end)
 
         return series_max, series_max_counts
+
+
+    @staticmethod
+    def get_current_statistics(team):
+        """Extract current games."""
+        soup_data = BeautifulSoup(str(team.current), 'html.parser')
+        raw_games = soup_data.find_all('tr')
+        games = pd.DataFrame([], columns=['team','status','date','score','draw'])
+        last_game = 0
+
+        for elt in raw_games:
+
+            try:
+                date = elt.find_all('td',{'class':'lm2'})[0].text[-8:]
+            except IndexError:  # End of proper formatted games
+                break
+
+            score = elt.find_all('td',{'class':'lm3'})[0].find_all('span',{'class':'lm3_score'})[0].text.strip().replace(" ","")
+
+            if not score:
+                score = -1
+                status = "next"
+                isDraw = -1
+                games.loc[len(games)] = [team.name, status, date, score, isDraw]
+                current_game = games.iloc[-1] # store the last "no score game"
+
+            elif score:
+                status = "past"
+                isDraw = 1 if int(score.split("-")[0]) == int(score.split("-")[1]) else 0
+                games.loc[len(games)] = [team.name, status, date, score, isDraw]
+                last_game = games.iloc[-1] # store the last "score game"
+                break
+
+        dashboard_games = [last_game, current_game]
+
+        # TODO: Specify this workaround range
+        if len(games) > 40:
+            print(f'{team.name} is not in this division')
+            return -1
+
+        else:
+            return dashboard_games

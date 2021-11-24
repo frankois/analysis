@@ -19,9 +19,14 @@ class Team:
         self.archive_name = f'archive_{self.name}_{self.level}_{broker}.html'
         self.archive_path = f'{config.ARCHIVES_PATH}{self.archive_name}'
 
+        self.current_name = f'current_{self.name}_{self.level}_{broker}.html'
+        self.current_path = f'{config.CURRENTS_PATH}{self.current_name}'
+
+        self.current_statistics = None
         self.draw_statistics = None
         self.draw_kpis = None
         self.series_max = None
+
 
     @property
     def has_archive(self):
@@ -40,17 +45,46 @@ class Team:
                 archive = f.read()
             return archive
 
+    @property
+    def has_current(self):
+        if os.path.isfile(self.current_path):
+            return True
+        else:
+            return False
+
+
+    @property
+    def current(self):
+        if not self.has_current:
+            print('This team does not have current, please fetch it first')
+        elif self.has_current:
+            with open(self.current_path, 'r') as f:
+                archive = f.read()
+            return archive
+
 
     def fetch_archive(self, force=0, verbose=0):
         if self.has_archive and not force:
             if verbose:
-                print('This team already have its archive')
+                print('This team already has its archive')
             else:
                 pass
         else:
             archive = self.broker.fetch_team_archive(self)
             with open(self.archive_path, 'w') as f:
                 f.write(str(archive))
+
+
+    def fetch_current(self, force=0, verbose=0):
+        if self.has_current and not force:
+            if verbose:
+                print('This team already has its current')
+            else:
+                pass
+        else:
+            current = self.broker.fetch_team_current(self)
+            with open(self.current_path, 'w') as f:
+                f.write(str(current))
 
 
     def generate_draw_statistics(self, force=0, verbose=0):
@@ -61,6 +95,16 @@ class Team:
                 pass
         else:
             self.draw_statistics = self.broker.get_draw_statistics(self)
+
+
+    def generate_current_statistics(self, force=0, verbose=0):
+        if self.current_statistics and not force:
+            if verbose:
+                print('Current statistics for this team are already available')
+            else:
+                pass
+        else:
+            self.current_statistics = self.broker.get_current_statistics(self)
 
 
     def generate_draw_kpis(self, force=0, verbose=0):

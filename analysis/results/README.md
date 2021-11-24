@@ -1,21 +1,11 @@
 # Results
 
 The aim of this analysis is to extract data regarding sport results, football for now.
-The process is divided as follows:
-
-## TODO
-- [ ] Need testing implementation
-- [ ] Need more robust statistic extraction
-- [ ] Think about linking leagues lists with teams or keep it separate
-
 
 ## Gather a list of all the supervised teams 
 Command to run: `python main.py league <country> <division> <broker>`  
-Example: `python main.py league france ligue-1 med`
-- So far, the decided format is `country | division | name | url | date`
-- [x] the 2 parameters have to be specified into a config for automation purpose
-- [x] the dataframe generated has to be stored in a persistent way
-- [ ] implement automatic parsing system from a team list
+Example: `python main.py league france 1 med`
+The format is `country | division | name | url | date`
 
 ```bash
     Unnamed: 0 country division                 name                               url        date
@@ -43,12 +33,7 @@ Example: `python main.py league france ligue-1 med`
 
 ## Scrape the results according to this list
 Command to run: `python main.py team <team> <country> <division> <broker>`  
-Example: `python main.py team auxerre france ligue2 med`  
-- The first step have been to extract the maximum nodraw series for a specific team.
-- It has only been implemented for French ligue 1 and 2 for now.
-- [ ] Extraction has to be more robust
-- [ ] the series have to all be stored in order to plot a graph
-- [ ] the leagues have to be expanded to other countries
+Example: `python main.py team auxerre france 2 med`  
 
 ```bash
 The maximum nodraw series in France : Ligue 1 was 15 games
@@ -57,9 +42,12 @@ The maximum nodraw series in France : Ligue 2 was 11 games
 
 ## Generate a report based on those data
 The focus here will be the rendering of the previously extracted data.
-- [x] basic plot function
-- [ ] Need to create a mechanism to agregate different team statistics
+- [ ] Add related notebook
 
 ## Misc
+- [ ] Improve dashboard style
+- [ ] Conditionnal behavior with dates
+- [ ] Improve documentation for main.py and update bash output
+- [ ] Implement DB
+- [ ] Add tests
 - [ ] PEP8 check
-- [ ] `force` argument consistency
