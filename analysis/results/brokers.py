@@ -15,6 +15,7 @@ import collections
 def format_date(date):
     """Format dates in proper package format."""
     date_today = datetime.datetime.strptime(get_current_date(), DATE_FORMAT)
+    date_formatted = ''
 
     if 'Hier' in date:
         date_formatted = date_today - datetime.timedelta(1)
@@ -26,9 +27,13 @@ def format_date(date):
         date_formatted = date_today + datetime.timedelta(1)
 
     else:
-        print(f'Unknown Error --> {date}')
+        print(f'This should be a game happening right now --> {date}')
 
-    return date_formatted.strftime(DATE_FORMAT)
+    if date_formatted:
+        return date_formatted.strftime(DATE_FORMAT)
+
+    else:
+        return 'Running'
 
 class MatchEnDirect:
 
@@ -191,6 +196,9 @@ class MatchEnDirect:
             elif score:
                 status = "past"
                 isDraw = 1 if int(score.split("-")[0]) == int(score.split("-")[1]) else 0
+                if date == 'Running':
+                    isDraw = -1
+                    score = 'x-x'
                 games.loc[len(games)] = [team.name, status, date, score, isDraw]
                 last_game = games.iloc[-1] # store the last "score game"
                 break
