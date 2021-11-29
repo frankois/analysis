@@ -1,19 +1,40 @@
 # -*- coding: utf-8 -*-
 
-from analysis.common.calendar import get_current_date
+from analysis.config import DATE_FORMAT
+from analysis.common.calendar import get_current_date, is_valid_date
 from analysis.common.parsing import fetch_soup
 from bs4 import BeautifulSoup
 
 import analysis.results.config as config
+import datetime
 import numpy as np
 import pandas as pd
 import collections
 
 
+def format_date(date):
+    """Format dates in proper package format."""
+    date_today = datetime.datetime.strptime(get_current_date(), DATE_FORMAT)
+
+    if 'Hier' in date:
+        date_formatted = date_today - datetime.timedelta(1)
+
+    elif 'ourd\'hui' in date:
+        date_formatted = date_today
+
+    elif 'Demain' in date:
+        date_formatted = date_today + datetime.timedelta(1)
+
+    else:
+        print(f'Unknown Error --> {date}')
+
+    return date_formatted.strftime(DATE_FORMAT)
+
 class MatchEnDirect:
 
     def __init__(self):
         pass
+
 
     @staticmethod
     def format_team_url(team):
@@ -99,6 +120,9 @@ class MatchEnDirect:
 
             try:
                 date = elt.find_all('td',{'class':'lm2'})[0].text[-8:]
+                if not is_valid_date(date):
+                    date = format_date(date)
+
             except IndexError:  # End of proper formatted games
                 break
 
@@ -149,6 +173,9 @@ class MatchEnDirect:
 
             try:
                 date = elt.find_all('td',{'class':'lm2'})[0].text[-8:]
+                if not is_valid_date(date):
+                    date = format_date(date)
+
             except IndexError:  # End of proper formatted games
                 break
 
