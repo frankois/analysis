@@ -41,8 +41,7 @@ The maximum nodraw series in France : Ligue 2 was 11 games
 ```
 
 ## Generate a report based on those data
-The focus here will be the rendering of the previously extracted data.
-- [ ] Add related notebook
+Check `notebooks/` folder for reporting.
 
 ## Misc
 - [ ] Improve dashboard style

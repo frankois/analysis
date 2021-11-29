@@ -1,9 +1,9 @@
 from analysis.results.league import League
-from team import Team
-from league import League
-from dashboard import Dashboard
+from analysis.results.team import Team
+from analysis.results.league import League
+from analysis.results.dashboard import Dashboard
 
-import config
+import analysis.results.config as config
 import pandas as pd
 import sys
 

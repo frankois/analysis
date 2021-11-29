@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from analysis.config import ROOT_DIR
 from analysis.results.brokers import MatchEnDirect # Change to conditional import
 
 import matplotlib.pyplot as plt
 
-import config
+import analysis.results.config as config
 import os
 
 class Team:
@@ -17,10 +18,10 @@ class Team:
         self.search_url = self.broker.format_team_url(self.name)
 
         self.archive_name = f'archive_{self.name}_{self.level}_{broker}.html'
-        self.archive_path = f'{config.ARCHIVES_PATH}{self.archive_name}'
+        self.archive_path = os.path.join(ROOT_DIR, config.ARCHIVES_PATH, self.archive_name)
 
         self.current_name = f'current_{self.name}_{self.level}_{broker}.html'
-        self.current_path = f'{config.CURRENTS_PATH}{self.current_name}'
+        self.current_path = os.path.join(ROOT_DIR, config.CURRENTS_PATH, self.current_name)
 
         self.current_statistics = None
         self.draw_statistics = None

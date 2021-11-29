@@ -1,6 +1,5 @@
 # Own
 data/
-*.ipynb
 config_dashboard.py
 
 # Byte-compiled / optimized / DLL files

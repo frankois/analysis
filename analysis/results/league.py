@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from analysis.common.calendar import get_current_date
+from analysis.config import ROOT_DIR
 from analysis.results.brokers import MatchEnDirect # Change to conditional import
 
-import config
+import analysis.results.config as config
 import os
 import pandas as pd
 
@@ -21,7 +22,8 @@ class League:
         self.search_url = self.broker.format_league_url(self.country, self.level)
 
         self.league_list_name = f'league_{self.country}_{self.level}_{broker}.csv'
-        self.league_list_path = f'{config.LEAGUE_LISTS_PATH}{self.league_list_name}'
+        self.league_list_path = os.path.join(ROOT_DIR, config.LEAGUE_LISTS_PATH, self.league_list_name)
+
 
     @property
     def date(self):

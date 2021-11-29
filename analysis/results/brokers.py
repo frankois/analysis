@@ -4,10 +4,10 @@ from analysis.common.calendar import get_current_date
 from analysis.common.parsing import fetch_soup
 from bs4 import BeautifulSoup
 
+import analysis.results.config as config
 import numpy as np
 import pandas as pd
 import collections
-import config
 
 
 class MatchEnDirect:

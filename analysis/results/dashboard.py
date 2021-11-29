@@ -1,7 +1,11 @@
-import config
-import config_dashboard
+import analysis.results.config as config
+import analysis.results.config_dashboard as config_dashboard
 
 from analysis.common.parsing import fetch_soup
+from analysis.config import ROOT_DIR
+from pathlib import Path
+
+import os
 import pandas as pd
 
 class Dashboard:
@@ -39,8 +43,9 @@ class Dashboard:
         for league in self.available_leagues:
             country = league[0]
             level = league[1]
-            league_file = f'../../data/results/leagues/league_{country}_{level}_{self.broker}.csv'
-            new_teams = pd.read_csv(league_file)
+            league_file = f'league_{country}_{level}_{self.broker}.csv'
+            league_path = os.path.join(ROOT_DIR, 'data', 'results', 'leagues', league_file)
+            new_teams = pd.read_csv(league_path)
             teams_to_concat = [available_teams, new_teams]
             available_teams = pd.concat(teams_to_concat)
 
